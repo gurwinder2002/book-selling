@@ -1,0 +1,27 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String             @id @default(auto()) @map("_id") @db.ObjectId
+  firstName    String
+  lastName     String
+  studentId    String             @unique
+  email        String             @unique
+  password     String
+  verification VerificationStatus @default(PENDING)
+
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+}
+
+enum VerificationStatus {
+  PENDING
+  VERIFIED
+  REJECT
+}
