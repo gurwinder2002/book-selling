@@ -2,6 +2,7 @@
 
 import { useSession } from "next-auth/react";
 import { signOut } from "next-auth/react";
+import { useEffect, useState } from "react";
 
 const books = [
   {
@@ -29,46 +30,20 @@ const books = [
     author: "George Orwell",
     description: "A dystopian novel about the dangers of totalitarianism.",
   },
-  {
-    id: 5,
-    title: "1984",
-    author: "George Orwell",
-    description: "A dystopian novel about the dangers of totalitarianism.",
-  },
-  {
-    id: 6,
-    title: "1984",
-    author: "George Orwell",
-    description: "A dystopian novel about the dangers of totalitarianism.",
-  },
-  {
-    id: 7,
-    title: "1984",
-    author: "George Orwell",
-    description: "A dystopian novel about the dangers of totalitarianism.",
-  },
-  {
-    id: 8,
-    title: "1984",
-    author: "George Orwell",
-    description: "A dystopian novel about the dangers of totalitarianism.",
-  },
-  {
-    id: 9,
-    title: "1984",
-    author: "George Orwell",
-    description: "A dystopian novel about the dangers of totalitarianism.",
-  },
-  {
-    id: 10,
-    title: "1984",
-    author: "George Orwell",
-    description: "A dystopian novel about the dangers of totalitarianism.",
-  },
 ];
 
 const Dashboard = () => {
   const { data: session } = useSession();
+
+  const [search, setSearch] = useState("");
+  const [filteredBooks, setFilteredBooks] = useState(books);
+
+  useEffect(() => {
+    const filtered = books.filter((book) =>
+      book.title.toLowerCase().includes(search.toLowerCase()),
+    );
+    setFilteredBooks(filtered);
+  }, [search]);
 
   return (
     <>
@@ -90,6 +65,8 @@ const Dashboard = () => {
             className="box-border h-10 rounded border border-gray-400 px-3 text-gray-800"
             type="text"
             placeholder="Search for a book"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
           />
           <button
             type="button"
@@ -100,35 +77,43 @@ const Dashboard = () => {
         </div>
       </div>
       <div className="grid w-full grid-cols-4 gap-3 p-4">
-        {books.map((book) => {
-          return (
-            <div
-              key={book.id}
-              className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition hover:shadow-md"
-            >
-              <div className="flex h-40 items-center justify-center bg-gray-100">
-                <span className="text-gray-400">Book Image</span>
-              </div>
-              <div className="p-4">
-                <h2 className="text-lg font-bold text-gray-900">
-                  {book.title}
-                </h2>
-                <p className="mt-1 text-sm text-gray-500">
-                  Author: {book.author}
-                </p>
-                <p className="mt-3 text-sm text-gray-600">{book.description}</p>
-                <div className="mt-4 flex gap-2">
-                  <button className="flex-1 rounded-md border border-gray-300 px-3 py-2 text-sm font-semibold hover:bg-gray-100">
-                    Edit
-                  </button>
-                  <button className="flex-1 rounded-md border border-gray-300 px-3 py-2 text-sm font-semibold hover:bg-gray-100">
-                    Delete
-                  </button>
+        {filteredBooks.length === 0 ? (
+          <div>
+            <h2>No books found</h2>
+          </div>
+        ) : (
+          filteredBooks.map((book) => {
+            return (
+              <div
+                key={book.id}
+                className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition hover:shadow-md"
+              >
+                <div className="flex h-40 items-center justify-center bg-gray-100">
+                  <span className="text-gray-400">Book Image</span>
+                </div>
+                <div className="p-4">
+                  <h2 className="text-lg font-bold text-gray-900">
+                    {book.title}
+                  </h2>
+                  <p className="mt-1 text-sm text-gray-500">
+                    Author: {book.author}
+                  </p>
+                  <p className="mt-3 text-sm text-gray-600">
+                    {book.description}
+                  </p>
+                  <div className="mt-4 flex gap-2">
+                    <button className="flex-1 rounded-md border border-gray-300 px-3 py-2 text-sm font-semibold hover:bg-gray-100">
+                      Edit
+                    </button>
+                    <button className="flex-1 rounded-md border border-gray-300 px-3 py-2 text-sm font-semibold hover:bg-gray-100">
+                      Delete
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })
+        )}
       </div>
     </>
   );
