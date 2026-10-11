@@ -3,6 +3,7 @@
 import { useSession } from "next-auth/react";
 import { signOut } from "next-auth/react";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 const books = [
   {
@@ -68,12 +69,12 @@ const Dashboard = () => {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
-          <button
-            type="button"
-            className="box-border h-10 rounded border border-gray-400 bg-white px-4 font-semibold text-gray-800 shadow hover:bg-gray-100"
+          <Link
+            href="/add-book"
+            className=" flex items-center justify-center box-border h-10 rounded border border-gray-400 bg-white px-4 font-semibold text-gray-800 shadow hover:bg-gray-100"
           >
             Add Book
-          </button>
+          </Link>
         </div>
       </div>
       <div className="grid w-full grid-cols-4 gap-3 p-4">
