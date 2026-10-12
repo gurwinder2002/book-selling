@@ -3,27 +3,41 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 const AddBook = () => {
+  const router = useRouter();
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
   const [description, setDescription] = useState("");
   const { data: session } = useSession();
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const bookDetails = {
-      id: session?.user?.id,
+      userId: session?.user?.id,
       title,
       author,
       description,
     };
 
-    console.log(session);
+    const response = await fetch("/api/books", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(bookDetails),
+    });
 
-    console.log(bookDetails);
+    if (response.ok) {
+      alert("Book added successfully");
+      router.push("/dashboard");
+    } else {
+      alert("Failed to add book");
+    }
   };
+
   return (
     <>
       <div className="flex w-full justify-end p-4">
