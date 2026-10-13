@@ -13,7 +13,7 @@ const Dashboard = () => {
   const [books, setBooks] = useState<Book[]>([]);
   const [filteredBooks, setFilteredBooks] = useState<Book[]>([]);
 
-  // Get books from API
+  // Get books from API and set books state
   useEffect(() => {
     const getBooks = async () => {
       const response = await fetch("/api/books");
@@ -24,7 +24,7 @@ const Dashboard = () => {
     getBooks();
   }, []);
 
-  // Filter books based on search
+  // Filter books based on search and user
   useEffect(() => {
     const filtered = books.filter((book) => {
       const matchesSearch = book.title
@@ -37,6 +37,23 @@ const Dashboard = () => {
 
     setFilteredBooks(filtered);
   }, [search, books, session?.user?.id]);
+
+  const handleDeleteBook = async (id: string) => {
+    const response = await fetch("/api/books", {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ id }),
+    });
+
+    if (response.ok) {
+      alert("Book deleted successfully");
+      setBooks(books.filter((book) => book.id !== id));
+    } else {
+      alert("Faile to delete book");
+    }
+  };
 
   return (
     <>
@@ -95,10 +112,16 @@ const Dashboard = () => {
                     {book.description}
                   </p>
                   <div className="mt-auto p-4 flex gap-2">
-                    <button className="flex-1 rounded-md border border-gray-300 px-3 py-2 text-sm font-semibold hover:bg-gray-100">
+                    <Link
+                      href={`/edit-book/${book.id}`}
+                      className="flex-1 rounded-md border text-center border-gray-300 px-3 py-2 text-sm font-semibold hover:bg-gray-100"
+                    >
                       Edit
-                    </button>
-                    <button className="flex-1 rounded-md border border-gray-300 px-3 py-2 text-sm font-semibold hover:bg-gray-100">
+                    </Link>
+                    <button
+                      className="flex-1 rounded-md border border-gray-300 px-3 py-2 text-sm font-semibold hover:bg-gray-100"
+                      onClick={() => handleDeleteBook(book.id)}
+                    >
                       Delete
                     </button>
                   </div>
